@@ -1,0 +1,16 @@
+schedule==1.2.2
+beautifulsoup4==4.14.3
+requests==2.32.5
+requests-oauthlib==2.0.0
+idna==3.11
+certifi==2026.1.4
+charset-normalizer==3.4.4
+urllib3<2.0.0 
+pdfkit==1.0.0
+numpy==1.26.4
+pandas==2.2.0
+protobuf
+pyasn1
+pyasn1-modules
+rsa
+cachetools

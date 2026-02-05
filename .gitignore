@@ -1,0 +1,4 @@
+.env.secrets
+backend/backend/.env.secrets
+**/*.env.secrets
+output/
