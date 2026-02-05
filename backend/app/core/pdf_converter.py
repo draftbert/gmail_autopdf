@@ -84,7 +84,6 @@ class PDFGenerator:
 
         full_path = os.path.join(full_dir_path, filename)
         
-        print(full_path)
         return full_path
     
     def html_to_pdf(self, html, date, custom_filename=None):
