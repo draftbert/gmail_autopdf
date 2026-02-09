@@ -4,19 +4,21 @@ import schedule
 from app.core.email import GmailExtractor
 from app.core.pdf_converter import PDFGenerator
 from app.utils.utils import upload_to_onedrive, telegram
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 
 def job():
+    start = datetime.now()
     try:
         extractor = GmailExtractor()
-        pdf_gen = PDFGenerator(output_path="output")
+        pdf_gen   = PDFGenerator(output_path="output")
         
         print(f"\nSearching for emails - {datetime.now()}")
         
         messages = extractor.search_emails(
-            sender = os.getenv("SENDER"),
-            subject_keywords=[os.getenv("KEYWORD_1"), os.getenv("KEYWORD_2")]
+            sender           = os.getenv("SENDER"),
+            subject_keywords = [os.getenv("KEYWORD_1"), os.getenv("KEYWORD_2")],
+            since_date       = date.today() - timedelta(days=7)
         )
 
         if not messages:
@@ -43,7 +45,10 @@ def job():
             except Exception as e:
                 print(f"Failed processing message ID {msg_id}: {str(e)}")
         
-        print("Search Ended\n")
+        end        = datetime.now()
+        total_time = end - start
+        
+        print(f"Search Ended - {total_time.total_seconds():.2f}s\n")
         extractor.close()
 
     except Exception as e:

@@ -82,17 +82,31 @@ class GmailExtractor:
         
         return None
 
-    def search_emails(self, sender, subject_keywords, max_results=20):
+    def search_emails(self, sender, subject_keywords, since_date=None):
         """
         Searches inbox for emails matching sender and subject criteria.
         Returns list of message IDs sorted by most recent first.
-        IMAP search syntax is more limited than Gmail API.
+        
+        Args:
+            sender: Email address to filter by
+            subject_keywords: List of keywords to search in subject
+            since_date: datetime.date object - filters emails from this date forward
         """
         criteria = []
+        
         if sender:
             criteria.append(f'FROM "{sender}"')
-
-        search_crit = f'({criteria[0]})' if criteria else 'ALL'
+        
+        if since_date:
+            date_str = since_date.strftime("%d-%b-%Y")
+            criteria.append(f'SINCE {date_str}')
+        
+        
+        if criteria:
+            search_crit = ' '.join(criteria)
+        else:
+            search_crit = 'ALL'
+        
         
         status, messages = self.mail.search(None, search_crit)
         if status != 'OK':
@@ -102,10 +116,8 @@ class GmailExtractor:
         mail_ids = mail_ids[::-1]
         
         results = []
-        count = 0
         
         for mid in mail_ids:
-            if count >= max_results: break
             
             res, msg_data = self.mail.fetch(mid, '(BODY.PEEK[HEADER.FIELDS (SUBJECT)])')
             raw_header = msg_data[0][1]
@@ -114,7 +126,6 @@ class GmailExtractor:
             
             if any(k.lower() in subject.lower() for k in subject_keywords):
                 results.append({"id": mid.decode()})
-                count += 1
                 
         return results
 
